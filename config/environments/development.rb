@@ -30,11 +30,6 @@ Rails.application.configure do
     config.cache_store = :null_store
   end
   
-  if Rails.env.development?
-    # Only require the 'listen' gem in the development environment.
-    config.file_watcher = ActiveSupport::EventedFileUpdateChecker
-  end
-
   # Store uploaded files on the local file system (see config/storage.yml for options).
   config.active_storage.service = :local
 
