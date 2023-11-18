@@ -11,9 +11,19 @@
       </div>
       <div class="cardnewForm_memo">
         <%= f.label :memo %>
-        <%= f.text_area :memo, autofocus: true, class: "form-control", placeholder: "詳細" %>
-      <div class="text-center"><%= f.submit "作成する", class: "submitBtn" %></div>
+        <%= f.text_area :memo, autofocus: true, class: "form-control", placeholder: "詳細" %>   
       </div>
+      <div class="cardnewForm_deadline">
+        <%= f.label :締切日 %>
+        <%= f.date_field :deadline, autofocus: true, class: "form-control",  id: "card_deadline", placeholder: "カレンダーに反映します", value: "" %> 
+      </div>
+      <div class="text-center"><%= f.submit "作成する", class: "submitBtn" %></div>
     <% end %>
   </div>
 </div>
+
+<script>
+document.getElementById('card_deadline').addEventListener('change', function() {
+  this.setAttribute('value', this.value);
+});
+</script>

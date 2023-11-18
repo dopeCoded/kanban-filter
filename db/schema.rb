@@ -10,20 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_08_24_140459) do
+ActiveRecord::Schema.define(version: 2023_11_18_062138) do
+
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
 
   create_table "cards", force: :cascade do |t|
     t.string "title", limit: 255, null: false
-    t.text "memo", limit: 1000
-    t.integer "list_id", null: false
+    t.text "memo"
+    t.bigint "list_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.text "deadline"
     t.index ["list_id"], name: "index_cards_on_list_id"
   end
 
   create_table "lists", force: :cascade do |t|
     t.string "title", null: false
-    t.integer "user_id", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_lists_on_user_id"
