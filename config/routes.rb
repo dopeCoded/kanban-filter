@@ -6,4 +6,5 @@ Rails.application.routes.draw do
   resources :list, only: %i(new create edit update destroy) do
     resources :card, except: %i(index)
   end
+  post 'guest_login', to: 'sessions#guest_login'
 end
