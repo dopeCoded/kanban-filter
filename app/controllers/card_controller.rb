@@ -4,6 +4,15 @@ class CardController < ApplicationController
   def new
     @card = Card.new
     @list = List.find_by(id: params[:list_id])
+
+    if @list.nil?
+      # フラッシュメッセージでエラーを通知
+      flash.now[:alert] = "指定されたリストが見つかりません。"
+      # 同じページに留まるために、新しいカードオブジェクトを再度作成
+      @card = Card.new
+      # newテンプレートを再度レンダリング
+      render :new
+    end
   end
 
   def create

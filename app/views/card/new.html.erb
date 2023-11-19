@@ -1,9 +1,15 @@
 <div class="cardnewPgae">
   <div class='container'>
     <%= form_with model: @card, url: { action: :create }, html: { class: 'cardnewForm' }, local: true do |f| %>
-      <%= f.hidden_field :list_id, value: @list.id %>
+      <% if @list.present? %>
+        <%= f.hidden_field :list_id, value: @list.id %>
+      <% end %>
       <% if @card.errors.any? %>
-        <p class="text-danger">タイトルは1～255文字以内で入力してください</p>
+      <% @card.errors.full_messages.each do |message| %>
+        <% unless message.include?("List") %>
+          <p class="text-danger"><%= message %></p>
+        <% end %>
+      <% end %>
       <% end %>
       <div class="cardnewForm_title">
         <%= f.label :title %>
