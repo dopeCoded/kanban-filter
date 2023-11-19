@@ -1,4 +1,102 @@
+<style>
+  /* カレンダーの外側のコンテナを中央配置にする */
+  #calendar-container {
+    display: flex;
+    text-align: center;
+    height: 100vh; /* ビューポートの高さに合わせる */
+    width: 100%; /* コンテナの幅を100%に設定 */
+    margin: 0 auto; /* 左右のマージンを自動に設定 */
+  }
+
+  /* カレンダーのスタイル */
+  #calendar {
+    margin: auto;
+    border-collapse: collapse;
+    height: 50vh; /* 画面の高さの半分 */
+    width: 50vw; /* 画面の幅の半分 */
+  }
+
+  #calendar th, #calendar td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 8px;
+  }
+
+  #calendar th {
+    background-color: #f0f0f0;
+  }
+  /* カレンダーの数字の背景を白に設定 */
+  #calendar td {
+    background-color: white;
+  }
+
+  #calendar th, #calendar td {
+    border: 1px solid #ddd;
+    text-align: center;
+    padding: 8px;
+  }
+
+  /* 画面サイズが小さい場合のスタイル */
+  @media (max-width: 600px) {
+    #calendar th, #calendar td {
+      height: 70px; /* セルの最小の高さを小さくする */
+      width: 120px; /* セルの最小の幅を小さくする */
+      font-size: 12px; /* フォントサイズを小さくする */
+    }
+  }
+
+  /* 画面サイズが中程度の場合のスタイル */
+  @media (min-width: 601px) and (max-width: 1024px) {
+    #calendar th, #calendar td {
+      height: 80px; /* セルの最小の高さを中間のサイズにする */
+      width: 160px; /* セルの最小の幅を中間のサイズにする */
+      font-size: 14px; /* フォントサイズを中間のサイズにする */
+    }
+  }
+
+  /* 画面サイズが大きい場合のスタイル */
+  @media (min-width: 1025px) {
+    #calendar th, #calendar td {
+      height: 90px; /* セルの最小の高さを大きくする */
+      width: 200px; /* セルの最小の幅を大きくする */
+      font-size: 18px; /* フォントサイズを大きくする */
+    }
+  }
+
+  /* 土曜日の数字を青色に設定 */
+  #calendar .saturday {
+    color: blue;
+  }
+
+  /* 日曜日の数字を赤色に設定 */
+  #calendar .sunday {
+    color: red;
+  }
+
+  /* タスク表示部分のスタイル */
+  #calendar td div:nth-child(2) {
+    margin-top: 5px; /* 日付との間隔 */
+  }
+
+  /* カード詳細リンクのスタイル */
+  .cardDetail_link {
+    display: block;
+    color: black;
+    text-decoration: none;
+    margin-top: 5px;
+  }
+</style>
+
 <div class="topPage">
+  <button id="toggleCalendar" type="button">カレンダーを表示/非表示</button>
+  <div id="currentMonth"></div>
+
+  <button id="prev" type="button">前の月</button>
+  <button id="next" type="button">次の月</button>
+  <div id="calendar-container">
+    <div id="calendar"></div>
+  </div>
+
   <div class="listWrapper">
     <% @lists.each do |list| %>
       <div class="list">
@@ -31,3 +129,136 @@
     <% end %>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarContainer = document.getElementById('calendar-container');
+    calendarContainer.style.display = 'none';
+  });
+  // カードのデータをJavaScriptの変数に格納
+  // 各カードにリストのタイトルも含める
+  var cardsData = <%= @lists.map { |list| list.cards.map { |card| { title: card.title, deadline: card.deadline, url: list_card_path(list, card), listTitle: list.title } } }.flatten.to_json.html_safe %>;
+  var weeks = ['日', '月', '火', '水', '木', '金', '土'];
+  var date = new Date();
+  var year = date.getFullYear();
+  var month = date.getMonth() + 1;
+
+  // カレンダーを描画する関数
+  function renderCalendar(year, month) {
+    var calendar = document.getElementById('calendar');
+    var currentMonth = document.getElementById('currentMonth');
+    calendar.innerHTML = ''; // カレンダーをクリア
+
+    // 現在の年月を表示
+    currentMonth.textContent = `${year}年${month}月`;
+
+    // ヘッダー行を追加
+    var headerRow = document.createElement('tr');
+    weeks.forEach(day => {
+      var th = document.createElement('th');
+      th.textContent = day;
+      headerRow.appendChild(th);
+    });
+    calendar.appendChild(headerRow);
+
+    // 日付の行を追加
+    var firstDay = new Date(year, month - 1, 1);
+    var lastDay = new Date(year, month, 0);
+    var date = 1;
+    for (var i = 0; i < 6; i++) { // 最大6週間
+      var row = document.createElement('tr');
+      for (var j = 0; j < 7; j++) {
+        var cell = document.createElement('td');
+        var dateDiv = document.createElement('div'); // 日付を表示するためのdiv
+        var tasksDiv = document.createElement('div'); // タスクを表示するためのdiv
+
+        if (i === 0 && j < firstDay.getDay() || date > lastDay.getDate()) {
+          dateDiv.textContent = '';
+        } else {
+          dateDiv.textContent = date;
+          if (j === 0) { // 日曜日
+            cell.classList.add('sunday');
+          } else if (j === 6) { // 土曜日
+            cell.classList.add('saturday');
+          }
+          date++;
+        }
+
+        cell.appendChild(dateDiv);
+        cell.appendChild(tasksDiv);
+
+        var cellDate = new Date(year, month - 1, date - 1);
+        cardsData.forEach(card => {
+          var cardDate = new Date(card.deadline);
+          // Doneリストにないカードのみ表示
+          if (card.listTitle !== 'Done' && cardDate.getFullYear() === cellDate.getFullYear() &&
+              cardDate.getMonth() === cellDate.getMonth() &&
+              cardDate.getDate() === cellDate.getDate()) {
+            var cardLink = document.createElement('a');
+            cardLink.href = card.url;
+            cardLink.textContent = card.title;
+            cardLink.classList.add('cardDetail_link');
+            tasksDiv.appendChild(cardLink);
+          }
+        });
+
+        row.appendChild(cell);
+      }
+      calendar.appendChild(row);
+      if (date > lastDay.getDate()) {
+        break;
+      }
+    }
+  }
+
+  // 前の月へ移動
+  document.getElementById('prev').addEventListener('click', () => {
+    month--;
+    if (month < 1) {
+      year--;
+      month = 12;
+    }
+    renderCalendar(year, month);
+  });
+
+  // 次の月へ移動
+  document.getElementById('next').addEventListener('click', () => {
+    month++;
+    if (month > 12) {
+      year++;
+      month = 1;
+    }
+    renderCalendar(year, month);
+  });
+
+  // 初期のカレンダーを描画
+  renderCalendar(year, month);
+
+  // カレンダーの表示・非表示を切り替える関数
+  function toggleCalendarVisibility() {
+    //var calendar = document.getElementById('calendar');
+    var calendar = document.getElementById('calendar-container');
+    var currentMonth = document.getElementById('currentMonth');
+    var prevButton = document.getElementById('prev');
+    var nextButton = document.getElementById('next');
+
+    // カレンダーと関連要素の表示状態を切り替える
+    if (calendar.style.display === 'none') {
+      calendar.style.display = 'block';
+      currentMonth.style.display = 'block';
+      prevButton.style.display = 'inline-block';
+      nextButton.style.display = 'inline-block';
+    } else {
+      calendar.style.display = 'none';
+      currentMonth.style.display = 'none';
+      prevButton.style.display = 'none';
+      nextButton.style.display = 'none';
+    }
+  }
+
+  // ボタンのクリックイベントに関数を紐付け
+  document.getElementById('toggleCalendar').addEventListener('click', toggleCalendarVisibility);
+  
+  // 初期状態ではカレンダーを非表示に設定
+  toggleCalendarVisibility();
+</script>
