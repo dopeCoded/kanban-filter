@@ -93,6 +93,18 @@
   .warning{background: #F4CE46; color:#fff}
   .error{background: #FB7D44; color:#fff}
   text-decoration: none;
+  svg {
+      color: gray !important;
+  }
+
+  .addCard_link {
+      color: gray;
+  }
+
+  .kanban-title-board a {
+    color: white;
+    text-decoration: none;
+}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.css">
 <script src="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js"></script>
@@ -360,9 +372,9 @@ console.log(allLists);
       listCards.sort((a, b) => a.position - b.position);
 
       return {
-          id: '_' + list.id, // Use list id for uniqueness
+          id: list.id, // Use list id for uniqueness
           title: list.title,
-          class: index === 0 ? 'info' : (index === 1 ? 'warning' : 'success'),
+          class: 'info',
           item: listCards.map(card => {
               // Extracting the card ID from the URL
               var cardId = card.url.split('/').pop(); // Assuming URL format is '/list/8/card/9'
@@ -374,6 +386,102 @@ console.log(allLists);
           })
       };
   });
+  console.log(listIdMapping);
+
+  document.addEventListener('DOMContentLoaded', function() {
+  var kanbanHeaders = document.querySelectorAll('.kanban-board-header');
+  console.log(kanbanHeaders);
+
+  kanbanHeaders.forEach(function(header) {
+    // 各ヘッダー要素からリストIDを取得
+    var listId = listIdMapping[header.parentNode.getAttribute('data-id')];
+    console.log(listId);
+
+    if (listId) {
+      // タイトル要素を取得
+      var titleElement = header.querySelector('.kanban-title-board');
+
+      // 新しいリンク要素を作成
+      var linkElement = document.createElement('a');
+      linkElement.href = "/list/" + listId + "/edit"; // リンクの設定
+      linkElement.textContent = titleElement.textContent; // タイトルテキストのコピー
+      linkElement.style.textDecoration = 'none'; // 下線を削除
+      linkElement.style.color = 'black'; // テキストの色を黒に設定
+
+      // タイトル要素の内容をリンク要素で置き換え
+      titleElement.textContent = ''; // タイトルのテキストをクリア
+      titleElement.appendChild(linkElement); // リンクをタイトル要素に追加
+
+      // ヘッダーにクリックイベントを追加
+      header.addEventListener('click', function() {
+        window.location.href = linkElement.href;
+      });
+    }
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // ヘッダー要素を取得
+    var kanbanHeader = document.querySelector('.kanban-board-header.info');
+
+    // ヘッダーが存在する場合、クリックイベントを追加
+    if (kanbanHeader) {
+        kanbanHeader.addEventListener('click', function() {
+            // リンクのURLを取得
+            var linkUrl = kanbanHeader.querySelector('.kanban-title-board a').getAttribute('href');
+            // リンクのURLに遷移
+            window.location.href = linkUrl;
+        });
+    }
+});
+
+  
+  function addCardButtonToKanbanDrag() {
+    // kanban-dragの全ての要素を取得
+    var kanbanDrags = document.querySelectorAll('.kanban-drag');
+
+    kanbanDrags.forEach(function(dragArea) {
+        // addCardのdivコンテナを作成
+        var addCardDiv = document.createElement('div');
+        addCardDiv.classList.add('addCard');
+
+        // アイコンを含むSVG要素を作成
+        var svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svgElement.classList.add('svg-inline--fa', 'fa-plus-square', 'fa-w-14');
+        svgElement.setAttribute('aria-hidden', 'true');
+        svgElement.setAttribute('focusable', 'false');
+        svgElement.setAttribute('data-prefix', 'far');
+        svgElement.setAttribute('data-icon', 'plus-square');
+        svgElement.setAttribute('role', 'img');
+        svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        svgElement.setAttribute('viewBox', '0 0 448 512');
+        svgElement.setAttribute('color', 'gray');
+        svgElement.innerHTML = '<path fill="currentColor" d="M352 240v32c0 6.6-5.4 12-12 12h-88v88c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-88h-88c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h88v-88c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v88h88c6.6 0 12 5.4 12 12zm96-160v352c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V80c0-26.5 21.5-48 48-48h352c26.5 0 48 21.5 48 48zm-48 346V86c0-3.3-2.7-6-6-6H54c-3.3 0-6 2.7-6 6v340c0 3.3 2.7 6 6 6h340c3.3 0 6-2.7 6-6z"></path>';
+
+        // リンク要素を作成
+        var linkElement = document.createElement('a');
+        linkElement.classList.add('addCard_link');
+        linkElement.textContent = 'カードを追加';
+        linkElement.style.marginLeft = '5px';
+
+        // kanban-drag要素が属するリストのIDを取得
+        var listId = listIdMapping[dragArea.closest('.kanban-board').dataset.id];
+        linkElement.href = `/list/${listId}/card/new`;
+
+        // SVGとリンクをaddCardDivに追加
+        addCardDiv.appendChild(svgElement);
+        addCardDiv.appendChild(linkElement);
+
+        // addCardDivをkanban-drag要素の最後に追加
+        dragArea.appendChild(addCardDiv);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  addCardButtonToKanbanDrag();
+});
+
 
 function updateCardList(cardId, newListId, newOrder) {
   console.log("Card ID:", cardId, "New List ID:", newListId, "New Order:", newOrder);
@@ -402,7 +510,7 @@ function getCSRFToken() {
   return '';
 }
 
-  var KanbanTest = new jKanban({
+  let Kanban = new jKanban({
     element : '#myKanban',
     gutter  : '10px',
     click : function(el){
