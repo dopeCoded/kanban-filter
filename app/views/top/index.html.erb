@@ -98,6 +98,13 @@
 <script src="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js"></script>
 
 <div class="container-fluid">
+  <% @lists_user.each do |list| %>
+    <!-- Display information about the list -->
+    <div>
+      <%= list.title %>
+    </div>
+<% end %>
+
    <div class="row">
       <div class="col-md-12">
          <h1>jKanbanサンプル</h1>
@@ -119,7 +126,7 @@
 
   <div class="listWrapper">
     <% @lists.each do |list| %>
-      <div class="list">
+      <div class="list kanban-board" data-list-id="<%= list.id %>" data-list-title="<%= list.title.downcase %>">
         <div class="list_header">
           <h2 class="list_header_title"><%= list.title %></h2>
 
@@ -152,6 +159,7 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    fetchListIds();
     var calendarContainer = document.getElementById('calendar-container');
     calendarContainer.style.display = 'none';
   });
@@ -305,23 +313,73 @@ function groupBy(list, keyGetter) {
     });
     return map;
 }
+var listIdMapping = {};
+document.querySelectorAll('.kanban-board').forEach(function(board) {
+    var listTitle = board.dataset.listTitle; // 'todo', 'doing', 'done', etc.
+    var listId = board.dataset.listId;
+    listIdMapping['_' + listTitle] = listId;
+    //console.log(listIdMapping); //
+});
+function fetchListIds() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', '/lists/ids', true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      var lists = JSON.parse(xhr.responseText);
+      lists.forEach(function(list) {
+        listIdMapping['_' + list.title.toLowerCase()] = list.id;
+      });
+    }
+  };
+  xhr.send();
+}
 
 // Group cards by their listTitle
 var grouped = groupBy(cards, card => card.listTitle);
-
 // Map to new structure
 var result = Array.from(grouped).map(([listTitle, cards], index) => {
     return {
         id: '_' + listTitle.toLowerCase(),
         title: listTitle,
         class: index === 0 ? 'info' : (index === 1 ? 'warning' : 'success'),
-        item: cards.map(card => ({
-            title: `<a style="text-decoration: none; color: black !important" href="${card.url}">${card.title}</a>`
-        }))
+        item: cards.map(card => {
+            // Extracting the card ID from the URL
+            var cardId = card.url.split('/').pop(); // Assuming the URL format is '/list/8/card/9'
+
+            return {
+                id: cardId, // Use the extracted card ID
+                title: `<a style="text-decoration: none; color: black !important" href="${card.url}">${card.title}</a>`
+            };
+        })
     };
 });
-console.log(result);
 
+function updateCardList(cardId, newListId) {
+  console.log("Card ID:", cardId, "New List ID:", newListId);
+  var xhr = new XMLHttpRequest();
+  var updateUrl = '/card/' + cardId + '/update_list'; // Replace with your actual update endpoint
+  xhr.open('POST', updateUrl, true);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.setRequestHeader('X-CSRF-Token', getCSRFToken()); // Get CSRF token for Rails
+
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4 && xhr.status == 200) {
+      console.log('Card list updated successfully');
+    }
+  };
+
+  xhr.send(`list_id=${newListId}`);
+}
+
+function getCSRFToken() {
+  var metas = document.getElementsByTagName('meta');
+  for (var i = 0; i < metas.length; i++) {
+      if (metas[i].getAttribute('name') === "csrf-token") {
+          return metas[i].getAttribute('content');
+      }
+  }
+  return '';
+}
 
   var KanbanTest = new jKanban({
     element : '#myKanban',
@@ -329,7 +387,19 @@ console.log(result);
     click : function(el){
         window.location.href = extractHref(el.innerHTML);
     },
-    boards  :result
+    boards  :result,
+    dragendEl: function (el) {
+    var cardId = el.getAttribute('data-eid');
+    var newListKey = el.parentNode.parentNode.dataset.id; // '_todo', '_doing', etc.
+    var newListId = listIdMapping[newListKey];
+
+    if (cardId && newListId) {
+        updateCardList(cardId, newListId);
+    } else {
+        console.error("Error: Missing cardId or newListId");
+    }
+}
+
 });
 
 </script>

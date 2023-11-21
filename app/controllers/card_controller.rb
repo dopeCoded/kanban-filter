@@ -44,6 +44,17 @@ class CardController < ApplicationController
     redirect_to :root
   end
 
+  def update_list
+    card = Card.find(params[:id])
+    if card.update(list_id: params[:list_id])
+      # Handle successful update
+      render json: { message: "Card updated successfully." }, status: :ok
+    else
+      # Handle update failure
+      render json: { errors: card.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   private
     def card_params
       params.require(:card).permit(:title, :memo, :list_id, :deadline)

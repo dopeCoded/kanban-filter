@@ -16,6 +16,11 @@ class ListController < ApplicationController
   def edit
   end
 
+  def ids
+    @lists = current_user.lists.select(:id, :title) # Adjust according to your user association
+    render json: @lists
+  end
+
   def update
     if @list.update(list_params)
       redirect_to :root
