@@ -98,17 +98,18 @@
 <script src="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js"></script>
 
 <div class="container-fluid">
+  <div id="kanban-lists" data-lists="<%= @lists_user.to_json(only: [:id, :title]).html_safe %>"></div>
+
   <% @lists_user.each do |list| %>
     <!-- Display information about the list -->
     <div>
       <%= list.title %>
+      <%= list.id %>
     </div>
 <% end %>
 
    <div class="row">
       <div class="col-md-12">
-         <h1>jKanbanサンプル</h1>
-         <hr>
          <div id="myKanban"></div>
       </div>
    </div>
@@ -317,12 +318,13 @@ var listIdMapping = {};
 document.querySelectorAll('.kanban-board').forEach(function(board) {
     var listTitle = board.dataset.listTitle; // 'todo', 'doing', 'done', etc.
     var listId = board.dataset.listId;
-    listIdMapping['_' + listTitle] = listId;
+    listIdMapping[listTitle] = listId;
     //console.log(listIdMapping); //
 });
+console.log(listIdMapping);
 function fetchListIds() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', '/lists/ids', true);
+  xhr.open('GET', '/list/ids', true);
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status == 200) {
       var lists = JSON.parse(xhr.responseText);
@@ -334,28 +336,47 @@ function fetchListIds() {
   xhr.send();
 }
 
-// Group cards by their listTitle
-var grouped = groupBy(cards, card => card.listTitle);
-// Map to new structure
-var result = Array.from(grouped).map(([listTitle, cards], index) => {
+  var kanbanContainer = <%= @lists_user.to_json(only: [:id, :title]).html_safe %>;
+  var allLists = kanbanContainer.map((list, index) => {
     return {
-        id: '_' + listTitle.toLowerCase(),
-        title: listTitle,
-        class: index === 0 ? 'info' : (index === 1 ? 'warning' : 'success'),
-        item: cards.map(card => {
-            // Extracting the card ID from the URL
-            var cardId = card.url.split('/').pop(); // Assuming the URL format is '/list/8/card/9'
-
-            return {
-                id: cardId, // Use the extracted card ID
-                title: `<a style="text-decoration: none; color: black !important" href="${card.url}">${card.title}</a>`
-            };
-        })
+        id: list.title.toLowerCase(), // Prefixing the id with an underscore for uniqueness
+        title: list.title,
+        class: index === 0 ? 'info' : (index === 1 ? 'warning' : 'success'), // Assigning classes based on the index
+        item: [] // Assuming no items initially, can be populated later
     };
 });
 
-function updateCardList(cardId, newListId) {
-  console.log("Card ID:", cardId, "New List ID:", newListId);
+console.log(allLists);
+  
+
+  // Group cards by their listTitle
+  var grouped = groupBy(cards, card => card.listTitle);
+
+  // Map each list to a kanban board entry
+  var result = allLists.map((list, index) => {
+      var listCards = grouped.get(list.title) || []; // Get cards for the list, or an empty array if none
+
+      // Sort cards by their position if any
+      listCards.sort((a, b) => a.position - b.position);
+
+      return {
+          id: '_' + list.id, // Use list id for uniqueness
+          title: list.title,
+          class: index === 0 ? 'info' : (index === 1 ? 'warning' : 'success'),
+          item: listCards.map(card => {
+              // Extracting the card ID from the URL
+              var cardId = card.url.split('/').pop(); // Assuming URL format is '/list/8/card/9'
+
+              return {
+                  id: cardId, // Use the extracted card ID
+                  title: `<a style="text-decoration: none; color: black !important" href="${card.url}">${card.title}</a>`
+              };
+          })
+      };
+  });
+
+function updateCardList(cardId, newListId, newOrder) {
+  console.log("Card ID:", cardId, "New List ID:", newListId, "New Order:", newOrder);
   var xhr = new XMLHttpRequest();
   var updateUrl = '/card/' + cardId + '/update_list'; // Replace with your actual update endpoint
   xhr.open('POST', updateUrl, true);
@@ -368,7 +389,7 @@ function updateCardList(cardId, newListId) {
     }
   };
 
-  xhr.send(`list_id=${newListId}`);
+  xhr.send(`list_id=${newListId}&order=${newOrder}`);
 }
 
 function getCSRFToken() {
@@ -392,9 +413,19 @@ function getCSRFToken() {
     var cardId = el.getAttribute('data-eid');
     var newListKey = el.parentNode.parentNode.dataset.id; // '_todo', '_doing', etc.
     var newListId = listIdMapping[newListKey];
+    var listEl = el.parentNode; // ドロップされたカードの親要素（リスト）を取得
+    var cardEls = listEl.getElementsByClassName('kanban-item'); // リスト内のすべてのカード要素を取得
+    var newOrder = Array.from(cardEls).map(function(cardEl) {
+        return cardEl.getAttribute('data-eid'); // カードのID（または他の識別子）を取得
+    });
+
+    console.log(newOrder);
+    console.log(cardId);
+    console.log(newListKey);
+    console.log(newListId);
 
     if (cardId && newListId) {
-        updateCardList(cardId, newListId);
+        updateCardList(cardId, newListId, newOrder);
     } else {
         console.error("Error: Missing cardId or newListId");
     }

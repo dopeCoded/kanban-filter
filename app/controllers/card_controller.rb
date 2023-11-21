@@ -17,6 +17,12 @@ class CardController < ApplicationController
 
   def create
     @card = Card.new(card_params)
+    if @card.list
+      # リスト内の最後のカードのpositionを取得し、新しいカードのpositionを設定
+      last_position = @card.list.cards.maximum(:position) || 0
+      @card.position = last_position + 1
+    end
+
     if @card.save
       redirect_to :root
     else
@@ -45,14 +51,17 @@ class CardController < ApplicationController
   end
 
   def update_list
-    card = Card.find(params[:id])
-    if card.update(list_id: params[:list_id])
-      # Handle successful update
-      render json: { message: "Card updated successfully." }, status: :ok
-    else
-      # Handle update failure
-      render json: { errors: card.errors.full_messages }, status: :unprocessable_entity
+    Card.transaction do
+      # params[:order] を配列に変換し、各カードの position を更新
+      order = params[:order].split(',')
+      order.each_with_index do |card_id, index|
+        Card.find(card_id).update!(list_id: params[:list_id], position: index)
+      end
     end
+  
+    render json: { message: "Card updated successfully." }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   private

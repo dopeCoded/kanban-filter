@@ -8,5 +8,5 @@ Rails.application.routes.draw do
   end
   post 'guest_login', to: 'sessions#guest_login'
   post '/card/:id/update_list', to: 'card#update_list', as: 'update_card_list'
-  get 'lists/ids', to: 'lists#ids'
+  get 'list/ids', to: 'list#ids'
 end
