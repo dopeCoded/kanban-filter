@@ -104,30 +104,16 @@
   .kanban-title-board a {
     color: white;
     text-decoration: none;
-}
+  }
+  .topPage {
+    display: none;
+  }
+
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.css">
 <script src="https://cdn.jsdelivr.net/npm/jkanban@1.3.1/dist/jkanban.min.js"></script>
 
 <div class="container-fluid">
-  <div id="kanban-lists" data-lists="<%= @lists_user.to_json(only: [:id, :title]).html_safe %>"></div>
-
-  <% @lists_user.each do |list| %>
-    <!-- Display information about the list -->
-    <div>
-      <%= list.title %>
-      <%= list.id %>
-    </div>
-<% end %>
-
-   <div class="row">
-      <div class="col-md-12">
-         <div id="myKanban"></div>
-      </div>
-   </div>
-</div>
-
-<div class="topPage">
   <button id="toggleCalendar" type="button">カレンダーを表示/非表示</button>
   <div id="currentMonth"></div>
 
@@ -136,6 +122,14 @@
   <div id="calendar-container">
     <div id="calendar"></div>
   </div>
+   <div class="row">
+      <div class="col-md-12">
+         <div id="myKanban"></div>
+      </div>
+   </div>
+</div>
+
+<div class="topPage">
 
   <div class="listWrapper">
     <% @lists.each do |list| %>
