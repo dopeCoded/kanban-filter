@@ -16,6 +16,10 @@
         <label>リスト名</label>
         <%= select :card, :list_id, @lists.map{ |l| [l.title, l.id] }, {}, { class: 'form-control' } %>
       </div>
+      <div class="cardnewForm_deadline">
+        <%= f.label :締切日 %>
+        <%= f.date_field :deadline, autofocus: true, class: "form-control",  id: "card_deadline", placeholder: "カレンダーに反映します", value: "" %> 
+      </div>
       <div class="text-center"><%= f.submit "更新する", class: "submitBtn" %></div>
     <% end %>
   </div>
