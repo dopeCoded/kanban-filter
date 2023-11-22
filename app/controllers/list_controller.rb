@@ -29,6 +29,18 @@ class ListController < ApplicationController
     end
   end
 
+  def update_order
+    puts "Received list_order: #{params[:list_order].inspect}"
+    params[:list_order].each do |list_order|
+      list = List.find(list_order[:id])
+      list.update(order: list_order[:order])
+    end
+
+    render json: { status: 'success' }
+  rescue => e
+    render json: { status: 'error', message: e.message }
+  end
+
   def destroy
     @list.destroy
     redirect_to :root

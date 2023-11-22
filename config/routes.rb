@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   post 'guest_login', to: 'sessions#guest_login'
   post '/card/:id/update_list', to: 'card#update_list', as: 'update_card_list'
   get 'list/ids', to: 'list#ids'
+  post 'update-list-order', to: 'list#update_order'
 end

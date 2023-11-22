@@ -327,7 +327,7 @@ document.querySelectorAll('.kanban-board').forEach(function(board) {
     listIdMapping[listTitle] = listId;
     //console.log(listIdMapping); //
 });
-console.log(listIdMapping);
+//console.log(listIdMapping);
 function fetchListIds() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', '/list/ids', true);
@@ -342,18 +342,20 @@ function fetchListIds() {
   xhr.send();
 }
 
-  var kanbanContainer = <%= @lists_user.to_json(only: [:id, :title]).html_safe %>;
+  var kanbanContainer = <%= @lists_user.to_json(only: [:id, :title, :order]).html_safe %>;
+  kanbanContainer.sort((a, b) => a.order - b.order);
   var allLists = kanbanContainer.map((list, index) => {
     return {
         id: list.title.toLowerCase(), // Prefixing the id with an underscore for uniqueness
+        //order: list.order
         title: list.title,
         class: index === 0 ? 'info' : (index === 1 ? 'warning' : 'success'), // Assigning classes based on the index
         item: [] // Assuming no items initially, can be populated later
     };
 });
-
+console.log("allLists");
 console.log(allLists);
-  
+console.log(kanbanContainer);
 
   // Group cards by their listTitle
   var grouped = groupBy(cards, card => card.listTitle);
@@ -504,6 +506,47 @@ function getCSRFToken() {
   return '';
 }
 
+  function updateListOrder() {
+    var boardOrder = [];
+    document.querySelectorAll('.kanban-board').forEach(function(board, index) {
+      var listId = listIdMapping['_' + board.dataset.id];
+      if (listId !== undefined) {
+        boardOrder.push({
+          id: listId,
+          order: index
+        });
+      }
+    });
+    console.log("boardOrder");
+    console.log(boardOrder);
+    // サーバーに新しい順序を送信
+    sendListOrderToServer(boardOrder);
+  }
+
+  function sendListOrderToServer(boardOrder) {
+    // リクエストボディを準備
+    const requestData = {
+      list_order: boardOrder
+    };
+
+    // リクエストオプションを設定
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCSRFToken() // CSRFトークンをヘッダーに追加
+      },
+      body: JSON.stringify(requestData)
+    };
+
+    // fetch APIを使用してサーバーにリクエストを送信
+    fetch('/update-list-order', requestOptions)
+      .then(response => response.json())
+      .then(data => console.log('Success:', data))
+      .catch((error) => console.error('Error:', error));
+  }
+
+
   let Kanban = new jKanban({
     element : '#myKanban',
     gutter  : '10px',
@@ -511,6 +554,11 @@ function getCSRFToken() {
         window.location.href = extractHref(el.innerHTML);
     },
     boards  :result,
+    dragBoards: true, // リストのドラッグアンドドロップを有効にする
+    dragendBoard: function(el) {
+      // リストが移動された後の処理
+      updateListOrder();
+    },
     dragendEl: function (el) {
     var cardId = el.getAttribute('data-eid');
     var newListKey = el.parentNode.parentNode.dataset.id; // '_todo', '_doing', etc.
@@ -521,10 +569,10 @@ function getCSRFToken() {
         return cardEl.getAttribute('data-eid'); // カードのID（または他の識別子）を取得
     });
 
-    console.log(newOrder);
-    console.log(cardId);
-    console.log(newListKey);
-    console.log(newListId);
+    //console.log(newOrder);
+    //console.log(cardId);
+    //console.log(newListKey);
+    //console.log(newListId);
 
     if (cardId && newListId) {
         updateCardList(cardId, newListId, newOrder);
