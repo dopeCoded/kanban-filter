@@ -1,11 +1,36 @@
+<style>
+  ul > li > a {
+    text-decoration: none;
+  }
+  nav {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+</style>
+<header class="header">
+  <nav class="nav">
+    <ul class="header_menu">
+      <li class="header_menu_title"><%= link_to "kanban", "/", class: "nav-link" %></li>
+      <li>
+        <ul class="header_menu_inner">
+          <li>
+              <%= link_to 'ゲストログイン', guest_login_path, method: :post %>
+              <i class="fas fa-sign-in-alt"></i>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>
 <div class='signinPage'>
   <div class='container'>
     <div class="app-description">
-      <h3 class="title">このアプリについて</h3>
+      <h1 class="title">このアプリについて</h1>
       <div style="text-align: center;">
-        <p>このアプリは、Trelloのようなタスク管理機能にカレンダー機能を組み合わせたものです。</p>
-        <p>タスクに締切日を設定すると、そのタスクは自動的にカレンダーに同期されます。これにより、どのタスクをいつまでに終わらせる必要があるかを一目で確認できます。</p>
-        <p>なお、リスト「Done」に移動したタスクはカレンダーに表示されません。</p>
+        <p>このアプリは、Trelloのようなタスク管理機能にカレンダー機能を組み合わせたものです。<br>
+          タスクに締切日を設定すると、そのタスクは自動的にカレンダーに同期されます。<br>
+          これにより、どのタスクをいつまでに終わらせる必要があるかを一目で確認できます。<br>
+          なお、リスト「Done」に移動したタスクはカレンダーに表示されません。</p>
       </div>
     </div>
 
