@@ -6,23 +6,23 @@
       <% end %>
       <div class="cardeditForm_title">
         <%= f.label :title %>
-        <%= f.text_field :title, class: "form-control", placeholder: "カード名" %>
+        <%= f.text_field :title, class: "form-control", placeholder: "カード名", value: @card.title %>
       </div>
       <div class="cardeditForm_memo">
         <%= f.label :memo %>
-        <%= f.text_area :memo, class: "form-control", placeholder: "詳細" %>
+        <%= f.text_area :memo, class: "form-control", placeholder: "詳細", value: @card.memo %>
       </div>
       <div class="cardeditForm_memo">
-        <label>リスト名</label>
-        <%= select :card, :list_id, @lists.map{ |l| [l.title, l.id] }, { selected: @card.list_id }, { class: 'form-control' } %>
+        <%= f.label :list_id, "リスト名" %>
+        <%= f.select :list_id, @lists.map{ |l| [l.title, l.id] }, { selected: @card.list_id }, { class: 'form-control' } %>
       </div>
       <div class="cardnewForm_deadline">
-        <%= f.label :締切日 %>
-        <%= f.date_field :deadline, autofocus: true, class: "form-control", id: "card_deadline", placeholder: "カレンダーに反映します", value: @card.deadline.to_s %> 
+        <%= f.label :deadline, "締切日" %>
+        <%= f.date_field :deadline,p autofocus: true, class: "form-control", id: "card_deadline", placeholder: "カレンダーに反映します", value: @card.deadline.to_s %> 
       </div>
       <div class="form-group cardnewForm_importance">
-        <%= f.label :重要度, class: 'form-label' %>
-        <%= f.select :importance, [['High', 'high'], ['Medium', 'medium'], ['Low', 'low']], { include_blank: true, selected: @card.importance }, { class: 'form-select' } %>
+        <%= f.label :importance, "重要度", class: 'form-label' %>
+        <%= f.select :importance, [['High', 'high'], ['Medium', 'medium'], ['Low', 'low']], { selected: @card.importance || 'low' }, { class: 'form-select' } %>
       </div>
       <div class="text-center"><%= f.submit "更新する", class: "submitBtn" %></div>
     <% end %>
