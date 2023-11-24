@@ -18,7 +18,7 @@
       </div>
       <div class="cardnewForm_deadline">
         <%= f.label :deadline, "締切日" %>
-        <%= f.date_field :deadline,p autofocus: true, class: "form-control", id: "card_deadline", placeholder: "カレンダーに反映します", value: @card.deadline.to_s %> 
+        <%= f.date_field :deadline, autofocus: true, class: "form-control", id: "card_deadline", placeholder: "カレンダーに反映します", value: @card.deadline.to_s %>
       </div>
       <div class="form-group cardnewForm_importance">
         <%= f.label :importance, "重要度", class: 'form-label' %>
