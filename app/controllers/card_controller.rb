@@ -41,6 +41,8 @@ class CardController < ApplicationController
     if @card.update(card_params)
       redirect_to :root
     else
+      # 更新に失敗した場合、@lists を再設定
+      @lists = List.where(user: current_user)
       render action: :edit
     end
   end
