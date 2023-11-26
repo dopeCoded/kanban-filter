@@ -507,6 +507,9 @@ function updateCardList(cardId, newListId, newOrder) {
   xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status == 200) {
       console.log('Card list updated successfully');
+      if (listIdMapping['_done'] == newListId) {
+        fetchRandomJoke();
+      }
     }
   };
 
@@ -522,6 +525,14 @@ function getCSRFToken() {
   }
   return '';
 }
+  function fetchRandomJoke() {
+    fetch('https://official-joke-api.appspot.com/random_joke')
+      .then(response => response.json())
+      .then(joke => {
+        alert(joke.setup + "\n" + joke.punchline);
+      })
+      .catch(error => console.error('Error fetching joke:', error));
+  }
 
   function updateListOrder() {
     var boardOrder = [];
