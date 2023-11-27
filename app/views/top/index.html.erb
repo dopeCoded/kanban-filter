@@ -574,7 +574,7 @@ function getCSRFToken() {
       .catch((error) => console.error('Error:', error));
   }
 
-
+  if (typeof Kanban === 'undefined' || Kanban === null) {
   let Kanban = new jKanban({
     element : '#myKanban',
     gutter  : '10px',
@@ -607,8 +607,9 @@ function getCSRFToken() {
     } else {
         console.error("Error: Missing cardId or newListId");
     }
-}
+    }
 
 });
+}
 
 </script>
