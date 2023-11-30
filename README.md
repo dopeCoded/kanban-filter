@@ -23,3 +23,6 @@ https://kanban-app1-27c63b5047cd.herokuapp.com/ <br >
 
 # ER図
 <img width="420" alt="ER図" src="https://github.com/dopeCoded/kanban-filter/assets/100071732/8c32e71b-6ef5-4ba1-9966-63656195d006">
+
+# 今後の課題
+複数人でタスクを行うことを想定してタスクボードを他人と共有できる様な仕組みにできると良いと感じました。
