@@ -1,0 +1,51 @@
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <h1 class="text-center mb-4">ユーザー情報の編集</h1>
+
+      <%= form_with(model: @user, url: user_path(@user), method: :patch, local: true, class: 'needs-validation', novalidate: true) do |form| %>
+        
+        <% if current_user.errors.any? %>
+          <div id="error_explanation" class="alert alert-danger">
+            <h2><%= pluralize(current_user.errors.count, "error") %> prohibited this user from being saved:</h2>
+            <ul>
+              <% current_user.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= form.label :name, class: 'form-label' %>
+          <%= form.text_field :name, class: 'form-control' %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :email, class: 'form-label' %>
+          <%= form.email_field :email, class: 'form-control' %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :password, "新しいパスワード", class: 'form-label' %>
+          <%= form.password_field :password, class: 'form-control' %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :password_confirmation, "新しいパスワード（確認用）", class: 'form-label' %>
+          <%= form.password_field :password_confirmation, class: 'form-control' %>
+        </div>
+
+        <div class="text-center">
+          <%= form.submit "更新する", class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <div class="text-center mt-4">
+        <%= link_to 'トップページへ戻る', root_path, style: "color: green;", class: "btn btn-link" %>
+      </div>
+
+    </div>
+  </div>
+</div>
