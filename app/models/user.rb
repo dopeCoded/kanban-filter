@@ -1,5 +1,4 @@
 class User < ApplicationRecord
-
   has_many :lists, dependent: :destroy
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -12,8 +11,8 @@ class User < ApplicationRecord
   private
 
   def add_default_lists
-    self.lists.create(title: 'ToDo')
-    self.lists.create(title: 'Doing')
-    self.lists.create(title: 'Done')
+    lists.create(title: 'ToDo')
+    lists.create(title: 'Doing')
+    lists.create(title: 'Done')
   end
 end

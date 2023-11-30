@@ -1,18 +1,18 @@
 class CardController < ApplicationController
-  before_action :set_card, only: %i(show edit update destroy)
+  before_action :set_card, only: %i[show edit update destroy]
 
   def new
     @card = Card.new
     @list = List.find_by(id: params[:list_id])
 
-    if @list.nil?
-      # フラッシュメッセージでエラーを通知
-      flash.now[:alert] = "指定されたリストが見つかりません。"
-      # 同じページに留まるために、新しいカードオブジェクトを再度作成
-      @card = Card.new
-      # newテンプレートを再度レンダリング
-      render :new
-    end
+    return unless @list.nil?
+
+    # フラッシュメッセージでエラーを通知
+    flash.now[:alert] = '指定されたリストが見つかりません。'
+    # 同じページに留まるために、新しいカードオブジェクトを再度作成
+    @card = Card.new
+    # newテンプレートを再度レンダリング
+    render :new
   end
 
   def create
@@ -60,18 +60,19 @@ class CardController < ApplicationController
         Card.find(card_id).update!(list_id: params[:list_id], position: index)
       end
     end
-  
-    render json: { message: "Card updated successfully." }, status: :ok
-  rescue => e
+
+    render json: { message: 'Card updated successfully.' }, status: :ok
+  rescue StandardError => e
     render json: { error: e.message }, status: :internal_server_error
   end
 
   private
-    def card_params
-      params.require(:card).permit(:title, :memo, :list_id, :deadline, :importance)
-    end
 
-    def set_card
-      @card = Card.find_by(id: params[:id])
-    end
+  def card_params
+    params.require(:card).permit(:title, :memo, :list_id, :deadline, :importance)
+  end
+
+  def set_card
+    @card = Card.find_by(id: params[:id])
+  end
 end

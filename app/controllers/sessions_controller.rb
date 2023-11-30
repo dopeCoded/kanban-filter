@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   skip_before_action :authenticate_user!, only: :guest_login
   def guest_login
     user = User.find_by(email: 'guest@example.com')
-    if user && user.valid_password?('password')
+    if user&.valid_password?('password')
       sign_in user
       redirect_to root_path, notice: 'ゲストユーザーとしてログインしました。'
     else

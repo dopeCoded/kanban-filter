@@ -1,5 +1,5 @@
 class ListController < ApplicationController
-  before_action :set_list, only: %i(edit update destroy)
+  before_action :set_list, only: %i[edit update destroy]
   def new
     @list = List.new
   end
@@ -37,7 +37,7 @@ class ListController < ApplicationController
     end
 
     render json: { status: 'success' }
-  rescue => e
+  rescue StandardError => e
     render json: { status: 'error', message: e.message }
   end
 
@@ -47,11 +47,12 @@ class ListController < ApplicationController
   end
 
   private
-    def list_params
-      params.require(:list).permit(:title).merge(user: current_user)
-    end
 
-    def set_list
-      @list = List.find_by(id: params[:id])
-    end
+  def list_params
+    params.require(:list).permit(:title).merge(user: current_user)
+  end
+
+  def set_list
+    @list = List.find_by(id: params[:id])
+  end
 end
