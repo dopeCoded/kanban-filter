@@ -573,43 +573,44 @@ function getCSRFToken() {
       .then(data => console.log('Success:', data))
       .catch((error) => console.error('Error:', error));
   }
+  document.addEventListener('turbolinks:load', function() {
+    if (typeof Kanban === 'undefined' || Kanban === null) {
+    let Kanban = new jKanban({
+      element : '#myKanban',
+      gutter  : '10px',
+      click : function(el){
+          window.location.href = extractHref(el.innerHTML);
+      },
+      boards  :result,
+      dragBoards: true, // リストのドラッグアンドドロップを有効にする
+      dragendBoard: function(el) {
+        // リストが移動された後の処理
+        updateListOrder();
+      },
+      dragendEl: function (el) {
+      var cardId = el.getAttribute('data-eid');
+      var newListKey = el.parentNode.parentNode.dataset.id; // '_todo', '_doing', etc.
+      var newListId = listIdMapping[newListKey];
+      var listEl = el.parentNode; // ドロップされたカードの親要素（リスト）を取得
+      var cardEls = listEl.getElementsByClassName('kanban-item'); // リスト内のすべてのカード要素を取得
+      var newOrder = Array.from(cardEls).map(function(cardEl) {
+          return cardEl.getAttribute('data-eid'); // カードのID（または他の識別子）を取得
+      });
 
-  if (typeof Kanban === 'undefined' || Kanban === null) {
-  let Kanban = new jKanban({
-    element : '#myKanban',
-    gutter  : '10px',
-    click : function(el){
-        window.location.href = extractHref(el.innerHTML);
-    },
-    boards  :result,
-    dragBoards: true, // リストのドラッグアンドドロップを有効にする
-    dragendBoard: function(el) {
-      // リストが移動された後の処理
-      updateListOrder();
-    },
-    dragendEl: function (el) {
-    var cardId = el.getAttribute('data-eid');
-    var newListKey = el.parentNode.parentNode.dataset.id; // '_todo', '_doing', etc.
-    var newListId = listIdMapping[newListKey];
-    var listEl = el.parentNode; // ドロップされたカードの親要素（リスト）を取得
-    var cardEls = listEl.getElementsByClassName('kanban-item'); // リスト内のすべてのカード要素を取得
-    var newOrder = Array.from(cardEls).map(function(cardEl) {
-        return cardEl.getAttribute('data-eid'); // カードのID（または他の識別子）を取得
-    });
+      //console.log(newOrder);
+      //console.log(cardId);
+      //console.log(newListKey);
+      //console.log(newListId);
 
-    //console.log(newOrder);
-    //console.log(cardId);
-    //console.log(newListKey);
-    //console.log(newListId);
+      if (cardId && newListId) {
+          updateCardList(cardId, newListId, newOrder);
+      } else {
+          console.error("Error: Missing cardId or newListId");
+      }
+      }
 
-    if (cardId && newListId) {
-        updateCardList(cardId, newListId, newOrder);
-    } else {
-        console.error("Error: Missing cardId or newListId");
-    }
-    }
-
-});
-}
+  });
+  }
+  });
 
 </script>
