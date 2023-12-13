@@ -1,0 +1,25 @@
+<header class="header">
+  <nav class="navbar navbar-expand-md navbar-light bg-light">
+    <a class="navbar-brand" href="/">kanban</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <%= link_to 'ゲストログイン', guest_login_path, method: :post, class: "nav-link" %>
+          <i class="fas fa-sign-in-alt"></i>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>
+<script>
+if (window.innerWidth < 600) {
+    // 画面幅が600ピクセル未満の場合に実行するコード
+    console.log("狭い画面です。");
+} else {
+    // 画面幅が600ピクセル以上の場合に実行するコード
+    console.log("広い画面です。");
+}
+</script>

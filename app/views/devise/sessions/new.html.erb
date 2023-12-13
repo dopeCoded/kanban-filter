@@ -1,27 +1,4 @@
-<style>
-  ul > li > a {
-    text-decoration: none;
-  }
-  nav {
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-</style>
-<header class="header">
-  <nav class="nav">
-    <ul class="header_menu">
-      <li class="header_menu_title"><%= link_to "kanban", "/", class: "nav-link" %></li>
-      <li>
-        <ul class="header_menu_inner">
-          <li>
-              <%= link_to 'ゲストログイン', guest_login_path, method: :post %>
-              <i class="fas fa-sign-in-alt"></i>
-          </li>
-        </ul>
-      </li>
-    </ul>
-  </nav>
-</header>
+<%= render 'partial/header' if current_user %>
 <div class='signinPage'>
   <div class='container'>
     <div class="app-description">

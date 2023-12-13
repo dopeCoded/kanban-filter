@@ -12,6 +12,7 @@ import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 import jKanban from 'jkanban';
 import 'jkanban/dist/jkanban.min.css';
+require('jquery')
 
 Rails.start()
 Turbolinks.start()
