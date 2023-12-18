@@ -13,9 +13,6 @@ class ListController < ApplicationController
     end
   end
 
-  def edit
-  end
-
   def ids
     @lists = current_user.lists.select(:id, :title) # Adjust according to your user association
     render json: @lists
