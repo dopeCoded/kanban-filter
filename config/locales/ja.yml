@@ -1,5 +1,10 @@
 ja:
   activerecord:
+    attributes:
+      user:
+        email: Eメール
+      card:
+        title: タイトル
     errors:
       messages:
         record_invalid: 'バリデーションに失敗しました: %{errors}'
