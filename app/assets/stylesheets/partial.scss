@@ -1,0 +1,15 @@
+#navPanel {
+  -moz-transform: translateX(0);    /* For old versions of Firefox */
+  -webkit-transform: translateX(0); /* For old versions of Chrome, Safari, and newer versions of Opera */
+  -ms-transform: translateX(0);     /* For old versions of Internet Explorer */
+  transform: translateX(0);         /* Standard syntax; should be last */
+  box-shadow: 0 0 1.5rem 0 rgba(0, 0, 0, 0.2);
+  visibility: visible;
+  background: #026aa7;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  width: 80%;
+  height: 80%;
+  right: 0;
+}

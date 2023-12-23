@@ -1,22 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<style>
-#navPanel {
-			-moz-transform: translateX(0);
-			-webkit-transform: translateX(0);
-			-ms-transform: translateX(0);
-			/* transform: translateX(0); */
-			box-shadow: 0 0 1.5rem 0 rgba(0, 0, 0, 0.2);
-			visibility: visible;
-      background:#026aa7;
-      position: fixed;
-      z-index: 1000;
-      top: 0;
-      width: 80%;
-      height: 80%;
-      right: 0; /* Align to the right */
-}
-</style>
+<%= stylesheet_link_tag "partial", :media => "all" %>
+
 <header class="header">
   <nav class="nav">
     <ul class="header_menu">
@@ -56,4 +41,3 @@
     </ul>
   </nav>
 </header>
-
