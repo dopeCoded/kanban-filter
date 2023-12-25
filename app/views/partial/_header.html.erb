@@ -57,23 +57,19 @@
   </nav>
 </header>
 <script>
-  $(document).ready(function() {
-    $('#close-nav-panel').click(function() {
-        $('#navPanel').hide();
-        
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('close-nav-panel').addEventListener('click', function() {
+        document.getElementById('navPanel').style.display = 'none';
     });
 
-    $('#open-nav-panel').click(function() {
-        $('#navPanel').show();
+    document.getElementById('open-nav-panel').addEventListener('click', function() {
+        document.getElementById('navPanel').style.display = 'block';
     });
-  });
 
-  if (window.innerWidth < 600) {
-      console.log("狭い画面です。");
-      document.getElementById("signout").remove();
-      document.getElementById("create-list").remove();
-      $('#open-nav-panel').css('display', 'block');
-  } else {
-      console.log("広い画面です。");
-  }
+    if (window.innerWidth < 600) {
+        document.getElementById('signout').remove();
+        document.getElementById('create-list').remove();
+        document.getElementById('open-nav-panel').style.display = 'block';
+    }
+});
 </script>
