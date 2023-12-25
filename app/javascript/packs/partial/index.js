@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('close-nav-panel').addEventListener('click', function() {
-      document.getElementById('navPanel').style.display = 'none';
+      document.querySelector('.navPanel').style.display = 'none';
   });
 
   document.getElementById('open-nav-panel').addEventListener('click', function() {
-      document.getElementById('navPanel').style.display = 'block';
+      document.querySelector('.navPanel').style.display = 'block';
   });
 
   if (window.innerWidth < 600) {
