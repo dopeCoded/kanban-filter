@@ -12,6 +12,7 @@ import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 import jKanban from 'jkanban';
 import 'jkanban/dist/jkanban.min.css';
+import "./partial/index.js" 
 require('jquery')
 
 Rails.start()

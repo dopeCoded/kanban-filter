@@ -1,22 +1,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-<style>
-#navPanel {
-			-moz-transform: translateX(0);
-			-webkit-transform: translateX(0);
-			-ms-transform: translateX(0);
-			/* transform: translateX(0); */
-			box-shadow: 0 0 1.5rem 0 rgba(0, 0, 0, 0.2);
-			visibility: visible;
-      background:#026aa7;
-      position: fixed;
-      z-index: 1000;
-      top: 0;
-      width: 80%;
-      height: 80%;
-      right: 0; /* Align to the right */
-}
-</style>
+<%= stylesheet_link_tag "partial", :media => "all" %>
+
 <header class="header">
   <nav class="nav">
     <ul class="header_menu">
@@ -38,7 +23,7 @@
       <li id="open-nav-panel" style="margin-right: 20px; display: none;">
         <svg xmlns="http://www.w3.org/2000/svg" height="24" width="21" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path fill="#ffffff" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>
       </li>
-      <div id="navPanel" style="display: none;">
+      <div class="navPanel" style="display: none;">
         <nav>
           <ul class="links">
             <li id="close-nav-panel" style="text-align: right;margin-right: 20px; margin-top: 20px;">
@@ -56,20 +41,3 @@
     </ul>
   </nav>
 </header>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('close-nav-panel').addEventListener('click', function() {
-        document.getElementById('navPanel').style.display = 'none';
-    });
-
-    document.getElementById('open-nav-panel').addEventListener('click', function() {
-        document.getElementById('navPanel').style.display = 'block';
-    });
-
-    if (window.innerWidth < 600) {
-        document.getElementById('signout').remove();
-        document.getElementById('create-list').remove();
-        document.getElementById('open-nav-panel').style.display = 'block';
-    }
-});
-</script>
