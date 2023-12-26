@@ -1,0 +1,31 @@
+link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+= stylesheet_link_tag "partial", media: "all"
+
+header.header
+  nav.nav
+    ul.header_menu
+      li.nav-link
+        = link_to "#{current_user.name}さん", edit_user_path, class: "your-custom-class"
+      li.header_menu_title
+        = link_to "kanban", "/", class: "nav-link"
+      li
+        ul.header_menu_inner
+          li
+            = link_to new_list_path, class: "nav-link", id: "create-list" do
+              span.mr-1 リストを作成
+              i.fas.fa-edit
+          li
+            = link_to "サインアウト", destroy_user_session_path, class: "nav-link", method: :delete, id: "signout"
+      li#open-nav-panel style="margin-right: 20px; display: none;"
+        svg[xmlns="http://www.w3.org/2000/svg" height="24" width="21" viewBox="0 0 448 512"]
+          path[fill="#ffffff" d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"]
+      .navPanel style="display: none;"
+        nav
+          ul.links
+            li#close-nav-panel style="text-align: right; margin-right: 20px; margin-top: 20px;"
+              i.fa-solid.fa-xmark
+            li
+              = link_to new_list_path, class: "nav-link", id: "create-list" do
+                span.mr-1 リストを作成
+                li
+                  = link_to "サインアウト", destroy_user_session_path, class: "nav-link", method: :delete, id: "signout"
